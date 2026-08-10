@@ -217,9 +217,61 @@
     });
   }
 
+  var DOW_LETTERS = ["D", "L", "M", "M", "G", "V", "S"];
+  function formatHeroDate(key) {
+    var d = parseDateKey(key);
+    try {
+      return new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long" }).format(d);
+    } catch (e) {
+      return key;
+    }
+  }
+  function dotColorForLog(log) {
+    if (!log || !log.pvcPerceived) return "";
+    if (log.pvcIntensity === 3) return "background:var(--dot-3)";
+    if (log.pvcIntensity === 2) return "background:var(--dot-2)";
+    return "background:var(--dot-1)";
+  }
+
+  function renderHero(key) {
+    document.getElementById("heroDateLabel").textContent = formatHeroDate(key);
+    document.getElementById("heroQuestion").textContent = key === todayKey() ? "Come sta il tuo cuore oggi?" : "Come stava il tuo cuore quel giorno?";
+  }
+
+  function renderDayStrip(selectedKey) {
+    var strip = document.getElementById("dayStrip");
+    strip.innerHTML = "";
+    var end = parseDateKey(todayKey());
+    for (var i = 6; i >= 0; i--) {
+      var d = addDays(end, -i);
+      var k = dateKey(d);
+      var log = getLog(k);
+      var cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "day-cell" + (k === selectedKey ? " selected" : "");
+      cell.setAttribute("data-date", k);
+      cell.innerHTML =
+        '<span class="day-cell-dow">' + DOW_LETTERS[d.getDay()] + '</span>' +
+        '<span class="day-cell-num">' + d.getDate() + '</span>' +
+        '<span class="day-cell-dot ' + (log ? "has-log" : "") + '" style="' + dotColorForLog(log) + '"></span>';
+      cell.addEventListener("click", function () {
+        var k2 = this.getAttribute("data-date");
+        logDateInput.value = k2;
+        loadFormForDate(k2);
+      });
+      strip.appendChild(cell);
+    }
+  }
+
+  document.getElementById("dateToggleBtn").addEventListener("click", function () {
+    document.getElementById("dateInputWrap").classList.toggle("hidden");
+  });
+
   function loadFormForDate(key) {
     var log = getLog(key);
     renderChecklistForDate(key);
+    renderHero(key);
+    renderDayStrip(key);
     if (log) {
       setSegActive(pvcPerceivedSeg, log.pvcPerceived ? "si" : "no");
       pvcDetails.classList.toggle("hidden", !log.pvcPerceived);
@@ -339,9 +391,40 @@
       summaryItem(pvcDays, "Giorni con extrasistoli") +
       summaryItem(refluxDays, "Giorni con reflusso") +
       summaryItem(avgSleep, "Media ore sonno");
+
+    renderWeekEntries(days);
   }
   function summaryItem(value, label) {
     return '<div class="summary-item"><div class="value">' + value + '</div><div class="label">' + label + "</div></div>";
+  }
+
+  function renderWeekEntries(days) {
+    var wrap = document.getElementById("weekEntries");
+    var html = "";
+    days.slice().reverse().forEach(function (d) {
+      var log = getLog(d);
+      if (!log) return;
+      var dd = parseDateKey(d);
+      var dotStyle = log.pvcPerceived ? dotColorForLog(log) : "background:var(--dot-none)";
+      var tags = [];
+      if (log.reflux) tags.push("reflusso");
+      if (log.sleepHours != null) tags.push(log.sleepHours + "h sonno");
+      var notesHtml = log.notes ? escapeHtml(log.notes) : "Nessuna nota";
+      html +=
+        '<div class="entry-card">' +
+        '<span class="entry-dot" style="' + dotStyle + '"></span>' +
+        '<div class="entry-body">' +
+        '<div class="entry-top"><span class="entry-date">' + DOW_LETTERS[dd.getDay()] + " " + dd.getDate() + "/" + (dd.getMonth() + 1) + '</span>' +
+        '<span class="entry-tags">' + tags.join(" · ") + "</span></div>" +
+        '<p class="entry-notes' + (log.notes ? "" : " empty") + '">' + notesHtml + "</p>" +
+        "</div></div>";
+    });
+    wrap.innerHTML = html || '<p class="muted small">Nessuna voce registrata questa settimana.</p>';
+  }
+  function escapeHtml(str) {
+    var div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   document.getElementById("prevWeekBtn").addEventListener("click", function () {
@@ -370,7 +453,90 @@
     });
   }
 
+  function renderLineChart(containerId, weeksData, formatVal) {
+    var el = document.getElementById(containerId);
+    var values = weeksData.map(function (w) { return w.value; });
+    var max = Math.max.apply(null, values.concat([1]));
+    var min = Math.min.apply(null, values.concat([0]));
+    var range = max - min || 1;
+    var w = 300, h = 100, pad = 8;
+    var n = weeksData.length;
+    var points = weeksData.map(function (item, i) {
+      var x = n > 1 ? pad + (i / (n - 1)) * (w - pad * 2) : w / 2;
+      var y = pad + (1 - (item.value - min) / range) * (h - pad * 2);
+      return { x: x, y: y, value: item.value };
+    });
+    var pathD = points.map(function (p, i) { return (i === 0 ? "M" : "L") + p.x.toFixed(1) + "," + p.y.toFixed(1); }).join(" ");
+    var circles = points.map(function (p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="var(--primary)"></circle>'; }).join("");
+    el.innerHTML =
+      '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+      '<path d="' + pathD + '" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>' +
+      circles +
+      "</svg>" +
+      '<div class="linechart-labels">' + weeksData.map(function (w2) { return "<span>S" + w2.week + "</span>"; }).join("") + "</div>";
+  }
+
+  function renderRecap() {
+    var currentWeek = Math.max(1, weekNumberFor(data.settings.startDate, todayKey()));
+    var start = addDays(parseDateKey(data.settings.startDate), (currentWeek - 1) * 7);
+    var days = [];
+    for (var i = 0; i < 7; i++) days.push(dateKey(addDays(start, i)));
+    var items = activeItems(currentWeek, data.settings.showAllItems);
+    var loggedDays = 0, pvcDays = 0, refluxDays = 0, sleepSum = 0, sleepCount = 0, totalChecks = 0, doneChecks = 0;
+    days.forEach(function (d) {
+      var log = getLog(d);
+      if (!log) return;
+      loggedDays++;
+      if (log.pvcPerceived) pvcDays++;
+      if (log.reflux) refluxDays++;
+      if (log.sleepHours != null) { sleepSum += log.sleepHours; sleepCount++; }
+      items.forEach(function (it) { totalChecks++; if (log.checklist && log.checklist[it.id]) doneChecks++; });
+    });
+    var el = document.getElementById("recapText");
+    if (!loggedDays) {
+      el.textContent = "Nessuna giornata registrata ancora questa settimana.";
+      return;
+    }
+    var adherence = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
+    var avgSleep = sleepCount ? (sleepSum / sleepCount).toFixed(1) : "-";
+    el.textContent = "Questa settimana (settimana " + currentWeek + "): extrasistoli percepite in " + pvcDays + " giorni su " + loggedDays + " registrati, reflusso in " + refluxDays + " giorni, sonno medio " + avgSleep + "h, aderenza checklist " + adherence + "%.";
+  }
+
+  function renderMomentsDistribution() {
+    var counts = { mattina: 0, pomeriggio: 0, sera: 0, notte: 0 };
+    var loggedDays = 0;
+    var end = parseDateKey(todayKey());
+    for (var i = 6; i >= 0; i--) {
+      var log = getLog(dateKey(addDays(end, -i)));
+      if (!log) continue;
+      loggedDays++;
+      (log.pvcMoments || []).forEach(function (m) { if (counts.hasOwnProperty(m)) counts[m]++; });
+    }
+    var labels = { mattina: "Mattina", pomeriggio: "Pomeriggio", sera: "Sera", notte: "Notte" };
+    var swatchClass = { mattina: "swatch-mattina", pomeriggio: "swatch-pomeriggio", sera: "swatch-sera", notte: "swatch-notte" };
+    var max = Math.max(counts.mattina, counts.pomeriggio, counts.sera, counts.notte, 1);
+    var wrap = document.getElementById("momentsDistribution");
+    if (!loggedDays) {
+      wrap.innerHTML = '<p class="muted small">Nessuna giornata registrata negli ultimi 7 giorni.</p>';
+      return;
+    }
+    var html = "";
+    ["mattina", "pomeriggio", "sera", "notte"].forEach(function (key) {
+      var val = counts[key];
+      var pct = Math.max(3, Math.round((val / max) * 100));
+      html +=
+        '<div class="distribution-row">' +
+        '<div class="distribution-row-top"><span class="distribution-row-label"><span class="distribution-swatch" style="background:var(--m-' + key + ')"></span>' + labels[key] + '</span>' +
+        '<span class="distribution-row-value">' + val + " / " + loggedDays + " giorni</span></div>" +
+        '<div class="distribution-bar-track"><div class="distribution-bar-fill" style="width:' + pct + '%;background:var(--m-' + key + ')"></div></div>' +
+        "</div>";
+    });
+    wrap.innerHTML = html;
+  }
+
   function renderTrends() {
+    renderRecap();
+    renderMomentsDistribution();
     var currentWeek = Math.max(1, weekNumberFor(data.settings.startDate, todayKey()));
     var firstWeek = Math.max(1, currentWeek - 11);
     var adherenceData = [], pvcData = [], refluxData = [], sleepData = [];
@@ -399,7 +565,7 @@
     renderChart("chartAdherence", adherenceData, function (v) { return v + "%"; });
     renderChart("chartPvc", pvcData);
     renderChart("chartReflux", refluxData);
-    renderChart("chartSleep", sleepData, function (v) { return v + "h"; });
+    renderLineChart("chartSleep", sleepData, function (v) { return v + "h"; });
   }
 
   // ---------- IMPOSTAZIONI tab ----------
@@ -576,7 +742,12 @@
   // ---------- Service worker & install prompt ----------
   if ("serviceWorker" in navigator) {
     var swRefreshing = false;
+    // self.clients.claim() nel service worker fa scattare "controllerchange" anche alla
+    // primissima installazione (senza controller precedente): in quel caso NON bisogna
+    // ricaricare, altrimenti si crea un loop di reload infinito ad ogni apertura dell'app.
+    var hadController = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (!hadController) { hadController = true; return; }
       if (swRefreshing) return;
       swRefreshing = true;
       window.location.reload();

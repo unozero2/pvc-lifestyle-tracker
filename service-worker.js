@@ -1,4 +1,4 @@
-var CACHE_NAME = "pvc-tracker-v2";
+var CACHE_NAME = "pvc-tracker-v3";
 var ASSETS = [
   "./",
   "./index.html",

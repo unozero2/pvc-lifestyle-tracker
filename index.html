@@ -32,9 +32,19 @@
 
   <!-- OGGI -->
   <section id="tab-oggi" class="tab-panel">
-    <div class="card">
-      <label class="field-label" for="logDate">Giorno</label>
-      <input type="date" id="logDate" class="input">
+    <div class="card hero-card">
+      <div class="hero-top">
+        <div>
+          <p class="hero-date" id="heroDateLabel"></p>
+          <h1 class="hero-question" id="heroQuestion">Come sta il tuo cuore oggi?</h1>
+        </div>
+        <button id="dateToggleBtn" class="icon-btn" type="button" aria-label="Scegli un'altra data">📅</button>
+      </div>
+      <div id="dayStrip" class="day-strip"></div>
+      <div id="dateInputWrap" class="date-input-wrap hidden">
+        <label class="field-label" for="logDate">Scegli un'altra data</label>
+        <input type="date" id="logDate" class="input">
+      </div>
     </div>
 
     <div class="card">
@@ -65,11 +75,11 @@
         </div>
         <div class="field-group">
           <span class="field-label">In quali momenti?</span>
-          <div class="chip-group" id="pvcMomentsGroup">
-            <button type="button" class="chip" data-value="mattina">Mattina</button>
-            <button type="button" class="chip" data-value="pomeriggio">Pomeriggio</button>
-            <button type="button" class="chip" data-value="sera">Sera</button>
-            <button type="button" class="chip" data-value="notte">Notte</button>
+          <div class="chip-group swatch-group" id="pvcMomentsGroup">
+            <button type="button" class="chip swatch-chip" data-value="mattina"><span class="swatch-color swatch-mattina"></span><span class="swatch-label">Mattina</span></button>
+            <button type="button" class="chip swatch-chip" data-value="pomeriggio"><span class="swatch-color swatch-pomeriggio"></span><span class="swatch-label">Pomeriggio</span></button>
+            <button type="button" class="chip swatch-chip" data-value="sera"><span class="swatch-color swatch-sera"></span><span class="swatch-label">Sera</span></button>
+            <button type="button" class="chip swatch-chip" data-value="notte"><span class="swatch-color swatch-notte"></span><span class="swatch-label">Notte</span></button>
           </div>
         </div>
       </div>
@@ -121,10 +131,22 @@
       <h2>Riepilogo settimana</h2>
       <div id="weekSummary" class="summary-grid"></div>
     </div>
+    <div class="card">
+      <h2>Voci di questa settimana</h2>
+      <div id="weekEntries" class="entries-list"></div>
+    </div>
   </section>
 
   <!-- ANDAMENTO -->
   <section id="tab-andamento" class="tab-panel hidden">
+    <div class="card recap-card">
+      <div class="recap-icon">✨</div>
+      <p class="recap-text" id="recapText">-</p>
+    </div>
+    <div class="card">
+      <h2>Distribuzione momenti con extrasistoli (ultimi 7 giorni)</h2>
+      <div id="momentsDistribution" class="distribution-list"></div>
+    </div>
     <div class="card">
       <h2>Aderenza checklist per settimana</h2>
       <div id="chartAdherence" class="chart"></div>
@@ -139,7 +161,7 @@
     </div>
     <div class="card">
       <h2>Media ore di sonno per settimana</h2>
-      <div id="chartSleep" class="chart"></div>
+      <div id="chartSleep" class="linechart"></div>
     </div>
     <p class="muted small">Questi grafici sono descrittivi: condividili con il cardiologo curante per l'interpretazione clinica, non sostituiscono una valutazione medica.</p>
   </section>
