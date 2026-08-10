@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diario Stile di Vita &amp; PVC</title>
+<meta name="description" content="Tracciamento personale del piano di stile di vita per extrasistolia ventricolare">
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-title">
+    <span class="pulse-dot" aria-hidden="true"></span>
+    <h1>Diario Stile di Vita</h1>
+  </div>
+  <button id="installBtn" class="btn btn-ghost btn-small hidden" type="button">Installa app</button>
+</header>
+
+<div id="weekBanner" class="week-banner" role="status"></div>
+<div id="reeval-banner" class="reeval-banner hidden" role="status">
+  Sei nella finestra di rivalutazione (settimane 8-12): ripeti il diario intensivo e valuta con il tuo cardiologo un Holter di controllo per confrontare il carico di extrasistoli con il basale.
+</div>
+
+<main id="main">
+
+  <!-- OGGI -->
+  <section id="tab-oggi" class="tab-panel">
+    <div class="card">
+      <label class="field-label" for="logDate">Giorno</label>
+      <input type="date" id="logDate" class="input">
+    </div>
+
+    <div class="card">
+      <h2>Checklist di oggi</h2>
+      <p class="muted small" id="checklistHint"></p>
+      <div id="checklistList" class="checklist-list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Diario sintomi</h2>
+
+      <div class="field-group">
+        <span class="field-label">Extrasistoli percepite oggi?</span>
+        <div class="segmented" id="pvcPerceivedSeg">
+          <button type="button" class="seg-btn" data-value="no">No</button>
+          <button type="button" class="seg-btn" data-value="si">Sì</button>
+        </div>
+      </div>
+
+      <div id="pvcDetails" class="hidden">
+        <div class="field-group">
+          <span class="field-label">Intensità</span>
+          <div class="segmented" id="pvcIntensitySeg">
+            <button type="button" class="seg-btn" data-value="1">Lieve</button>
+            <button type="button" class="seg-btn" data-value="2">Moderata</button>
+            <button type="button" class="seg-btn" data-value="3">Intensa / tutto il giorno</button>
+          </div>
+        </div>
+        <div class="field-group">
+          <span class="field-label">In quali momenti?</span>
+          <div class="chip-group" id="pvcMomentsGroup">
+            <button type="button" class="chip" data-value="mattina">Mattina</button>
+            <button type="button" class="chip" data-value="pomeriggio">Pomeriggio</button>
+            <button type="button" class="chip" data-value="sera">Sera</button>
+            <button type="button" class="chip" data-value="notte">Notte</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">Episodio di reflusso oggi?</span>
+        <div class="segmented" id="refluxSeg">
+          <button type="button" class="seg-btn" data-value="no">No</button>
+          <button type="button" class="seg-btn" data-value="si">Sì</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="sleepHours">Ore di sonno (stimate)</label>
+        <input type="number" id="sleepHours" class="input" min="0" max="14" step="0.5" placeholder="es. 5">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="sleepAwakenings">Numero di risvegli notturni</label>
+        <input type="number" id="sleepAwakenings" class="input" min="0" max="20" step="1" placeholder="es. 6">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="stressLevel">Livello di stress percepito: <span id="stressLevelVal">-</span>/10</label>
+        <input type="range" id="stressLevel" min="0" max="10" step="1" value="5" class="range">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="notes">Note libere</label>
+        <textarea id="notes" class="input textarea" rows="3" placeholder="es. giornata pesante, cena tardi, ecc."></textarea>
+      </div>
+
+      <button id="saveLogBtn" class="btn btn-primary btn-full" type="button">Salva la giornata</button>
+      <p id="saveConfirm" class="save-confirm hidden">Giornata salvata ✓</p>
+    </div>
+  </section>
+
+  <!-- SETTIMANA -->
+  <section id="tab-settimana" class="tab-panel hidden">
+    <div class="card">
+      <div class="week-nav">
+        <button id="prevWeekBtn" class="btn btn-ghost btn-small" type="button">‹ Prec.</button>
+        <span id="weekNavLabel" class="week-nav-label"></span>
+        <button id="nextWeekBtn" class="btn btn-ghost btn-small" type="button">Succ. ›</button>
+      </div>
+      <div id="weekGridWrap" class="week-grid-wrap"></div>
+    </div>
+    <div class="card">
+      <h2>Riepilogo settimana</h2>
+      <div id="weekSummary" class="summary-grid"></div>
+    </div>
+  </section>
+
+  <!-- ANDAMENTO -->
+  <section id="tab-andamento" class="tab-panel hidden">
+    <div class="card">
+      <h2>Aderenza checklist per settimana</h2>
+      <div id="chartAdherence" class="chart"></div>
+    </div>
+    <div class="card">
+      <h2>Giorni con extrasistoli percepite</h2>
+      <div id="chartPvc" class="chart"></div>
+    </div>
+    <div class="card">
+      <h2>Giorni con episodi di reflusso</h2>
+      <div id="chartReflux" class="chart"></div>
+    </div>
+    <div class="card">
+      <h2>Media ore di sonno per settimana</h2>
+      <div id="chartSleep" class="chart"></div>
+    </div>
+    <p class="muted small">Questi grafici sono descrittivi: condividili con il cardiologo curante per l'interpretazione clinica, non sostituiscono una valutazione medica.</p>
+  </section>
+
+  <!-- IMPOSTAZIONI -->
+  <section id="tab-impostazioni" class="tab-panel hidden">
+    <div class="card">
+      <h2>Piano</h2>
+      <div class="field-group">
+        <label class="field-label" for="startDate">Data di inizio del piano (settimana 1)</label>
+        <input type="date" id="startDate" class="input">
+      </div>
+      <div id="phaseTimeline" class="phase-timeline"></div>
+    </div>
+
+    <div class="card">
+      <h2>Checklist</h2>
+      <label class="switch-row">
+        <span>Mostra sempre tutte le voci (anche fuori fase)</span>
+        <input type="checkbox" id="showAllItems">
+      </label>
+    </div>
+
+    <div class="card">
+      <h2>Promemoria</h2>
+      <label class="switch-row">
+        <span>Attiva promemoria</span>
+        <input type="checkbox" id="notifEnabled">
+      </label>
+      <div class="field-group">
+        <label class="field-label" for="reminderMorning">Promemoria respirazione (mattina)</label>
+        <input type="time" id="reminderMorning" class="input" value="07:30">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="reminderEvening">Promemoria diario (sera)</label>
+        <input type="time" id="reminderEvening" class="input" value="21:00">
+      </div>
+      <button id="notifPermBtn" class="btn btn-secondary btn-full" type="button">Richiedi permesso notifiche</button>
+      <p id="notifStatus" class="muted small"></p>
+      <p class="muted small">Nota: su Android i promemoria funzionano in modo affidabile quando apri il telefono/l'app regolarmente; senza un server non è possibile garantire una sveglia esatta a app completamente chiusa.</p>
+    </div>
+
+    <div class="card">
+      <h2>Dati</h2>
+      <p class="muted small">Tutti i dati restano solo su questo dispositivo. Nessuna informazione viene inviata a un server.</p>
+      <button id="exportCsvBtn" class="btn btn-secondary btn-full" type="button">Esporta CSV</button>
+      <button id="exportJsonBtn" class="btn btn-secondary btn-full" type="button">Esporta JSON</button>
+      <button id="clearDataBtn" class="btn btn-danger btn-full" type="button">Cancella tutti i dati</button>
+    </div>
+
+    <div class="card">
+      <h2>Informazioni</h2>
+      <p class="muted small">App di auto-monitoraggio dello stile di vita, basata su un piano a 7 fasi derivato da letteratura scientifica su extrasistolia ventricolare, reflusso gastroesofageo e deprivazione di sonno. Non fornisce diagnosi né consigli terapeutici farmacologici.</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-tab="oggi" type="button">
+    <span class="nav-icon">📝</span><span>Oggi</span>
+  </button>
+  <button class="nav-btn" data-tab="settimana" type="button">
+    <span class="nav-icon">📅</span><span>Settimana</span>
+  </button>
+  <button class="nav-btn" data-tab="andamento" type="button">
+    <span class="nav-icon">📈</span><span>Andamento</span>
+  </button>
+  <button class="nav-btn" data-tab="impostazioni" type="button">
+    <span class="nav-icon">⚙️</span><span>Impostazioni</span>
+  </button>
+</nav>
+
+<script src="app.js" defer></script>
+</body>
+</html>
