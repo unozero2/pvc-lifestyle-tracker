@@ -575,8 +575,27 @@
 
   // ---------- Service worker & install prompt ----------
   if ("serviceWorker" in navigator) {
+    var swRefreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (swRefreshing) return;
+      swRefreshing = true;
+      window.location.reload();
+    });
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("service-worker.js").catch(function (e) {
+      navigator.serviceWorker.register("service-worker.js").then(function (reg) {
+        reg.addEventListener("updatefound", function () {
+          var newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener("statechange", function () {
+            if (newWorker.state === "activated") {
+              // Una nuova versione ha preso il controllo: la pagina si ricarica
+              // da sola una sola volta per mostrare i file aggiornati.
+            }
+          });
+        });
+        // Controlla periodicamente se c'è una nuova versione pubblicata.
+        setInterval(function () { reg.update(); }, 60 * 60 * 1000);
+      }).catch(function (e) {
         console.error("Registrazione service worker fallita", e);
       });
     });
