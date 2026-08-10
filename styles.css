@@ -1,55 +1,54 @@
 :root {
-  --bg: #fbf6f0;
-  --surface: #ffffff;
-  --text: #3a2e2b;
-  --muted: #8a7a72;
-  --border: #ede1d6;
-  --primary: #e0785a;
+  --bg: #f3eee5;
+  --surface: #e9e0d0;
+  --text: #362b21;
+  --muted: #8a7c68;
+  --border: #ddd2bd;
+  --primary: #242838;
   --primary-contrast: #ffffff;
-  --secondary-bg: #fdede7;
-  --secondary-text: #c05b3e;
-  --danger: #d64545;
-  --success: #6b9e78;
-  --chip-bg: #f3ece4;
-  --chip-active-bg: #e0785a;
+  --secondary-bg: #e3dcc9;
+  --secondary-text: #3a2e1f;
+  --danger: #b5453a;
+  --success: #6e8f5c;
+  --chip-bg: #f0e9dc;
+  --chip-active-bg: #242838;
   --chip-active-text: #ffffff;
-  --nav-bg: #ffffff;
-  --phase1: #8e7cc3;
-  --phase2: #6fa8ae;
-  --phase3: #e0a458;
-  --phase4: #6b9e78;
-  --phase5: #d97b66;
-  --shadow: 0 4px 18px rgba(58, 46, 43, 0.07);
-  --shadow-nav: 0 6px 20px rgba(58, 46, 43, 0.12);
+  --phase1: #9fadd1;
+  --phase2: #c79880;
+  --phase3: #d6a749;
+  --phase4: #7da179;
+  --phase5: #c06b52;
+  --shadow: 0 2px 10px rgba(54, 43, 33, 0.05);
+  --shadow-nav: 0 6px 20px rgba(30, 24, 18, 0.22);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
-  --nav-bg-dark: #232733;
+  --nav-bg-dark: #1e2230;
   --nav-text-dark: #9aa3b8;
-  --m-mattina: #e0a458;
-  --m-pomeriggio: #d9765a;
-  --m-sera: #8e7cc3;
-  --m-notte: #3a4a63;
-  --dot-none: #d8cdc3;
-  --dot-1: #e0a458;
-  --dot-2: #d9765a;
-  --dot-3: #c0392b;
+  --m-mattina: #d6a749;
+  --m-pomeriggio: #c06b52;
+  --m-sera: #9fadd1;
+  --m-notte: #3e4a63;
+  --dot-none: #ddd2bd;
+  --dot-1: #d6a749;
+  --dot-2: #c06b52;
+  --dot-3: #b5453a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #241c1a;
-    --surface: #2e2422;
-    --text: #f3e9e3;
-    --muted: #b9a79d;
-    --border: #3e322e;
-    --primary: #e88a6c;
-    --secondary-bg: #3a2823;
-    --secondary-text: #f0a98a;
-    --chip-bg: #3a2e2a;
-    --nav-bg: #2e2422;
+    --bg: #1c1712;
+    --surface: #29221b;
+    --text: #f0e7d8;
+    --muted: #ab9d8a;
+    --border: #3c332a;
+    --primary: #d9cdb3;
+    --primary-contrast: #241c14;
+    --secondary-bg: #33291f;
+    --secondary-text: #e7dcc4;
+    --chip-bg: #322a20;
     --shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-    --shadow-nav: 0 6px 20px rgba(0, 0, 0, 0.45);
-    --dot-none: #4a3f3a;
+    --shadow-nav: 0 6px 20px rgba(0, 0, 0, 0.5);
+    --dot-none: #4a3f33;
   }
 }
 
@@ -88,10 +87,12 @@ h2 {
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
+  filter: grayscale(1) contrast(1.1);
+  opacity: 0.75;
 }
 
 .day-strip { display: flex; justify-content: space-between; gap: 4px; margin-top: 4px; }
@@ -115,7 +116,7 @@ h2 {
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; font-weight: 600;
 }
-.day-cell.selected .day-cell-num { background: var(--text); color: var(--surface); }
+.day-cell.selected .day-cell-num { background: var(--primary); color: var(--primary-contrast); }
 .day-cell-dot { width: 6px; height: 6px; border-radius: 50%; background: transparent; }
 .day-cell-dot.has-log { background: var(--primary); }
 
@@ -143,7 +144,7 @@ h2 {
 .swatch-notte { background: var(--m-notte); }
 
 .recap-card { display: flex; gap: 12px; align-items: flex-start; }
-.recap-icon { font-size: 18px; flex-shrink: 0; }
+.recap-icon { font-size: 17px; flex-shrink: 0; filter: grayscale(0.6) sepia(0.3) contrast(1.1); opacity: 0.85; }
 .recap-text { font-family: var(--font-serif); font-style: italic; font-size: 15px; line-height: 1.5; color: var(--text); margin: 0; }
 
 .distribution-list { display: flex; flex-direction: column; gap: 12px; }
@@ -183,14 +184,14 @@ h2 {
 .pulse-dot {
   width: 11px; height: 11px; border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 0 0 rgba(224,120,90,0.6);
+  box-shadow: 0 0 0 0 rgba(36,40,56,0.5);
   animation: pulse 2s infinite;
   flex-shrink: 0;
 }
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(224,120,90,0.45); }
-  70% { box-shadow: 0 0 0 9px rgba(224,120,90,0); }
-  100% { box-shadow: 0 0 0 0 rgba(224,120,90,0); }
+  0% { box-shadow: 0 0 0 0 rgba(36,40,56,0.4); }
+  70% { box-shadow: 0 0 0 9px rgba(36,40,56,0); }
+  100% { box-shadow: 0 0 0 0 rgba(36,40,56,0); }
 }
 
 .week-banner {
@@ -221,7 +222,7 @@ main { padding: 0 16px; }
 
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 22px;
   padding: 18px;
   margin-bottom: 16px;
@@ -285,6 +286,7 @@ main { padding: 0 16px; }
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .chip.active { background: var(--chip-active-bg); color: var(--chip-active-text); border-color: var(--chip-active-bg); }
+.swatch-chip.active { background: none; border-color: transparent; }
 
 .checklist-list { display: flex; flex-direction: column; gap: 10px; }
 .checklist-item {
@@ -306,7 +308,8 @@ main { padding: 0 16px; }
   padding: 2px 8px;
   border-radius: 999px;
   margin-left: 6px;
-  color: white;
+  color: rgba(30, 22, 14, 0.75);
+  font-weight: 600;
   vertical-align: middle;
 }
 
@@ -323,9 +326,9 @@ main { padding: 0 16px; }
 .btn-full { width: 100%; margin-top: 8px; }
 .btn-primary { background: var(--primary); color: var(--primary-contrast); }
 .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); }
-.btn-danger { background: #fbe4e4; color: var(--danger); }
+.btn-danger { background: #f0dcd4; color: var(--danger); }
 @media (prefers-color-scheme: dark) {
-  .btn-danger { background: #3a1616; color: #ff9b9b; }
+  .btn-danger { background: #3a2420; color: #e2a99b; }
 }
 .btn-ghost { background: transparent; color: var(--secondary-text); border: 1px solid var(--border); }
 .btn-small { padding: 9px 14px; font-size: 13px; }
@@ -435,7 +438,8 @@ main { padding: 0 16px; }
   transition: background 0.15s, color 0.15s;
 }
 .nav-btn.active { color: #ffffff; font-weight: 700; background: rgba(255, 255, 255, 0.12); }
-.nav-icon { font-size: 20px; }
+.nav-icon { font-size: 20px; filter: grayscale(1) brightness(1.6) contrast(0.85); opacity: 0.9; }
+.nav-btn.active .nav-icon { filter: grayscale(1) brightness(2.2); opacity: 1; }
 
 .linechart { position: relative; height: 140px; padding-top: 10px; }
 .linechart svg { width: 100%; height: 100%; display: block; overflow: visible; }

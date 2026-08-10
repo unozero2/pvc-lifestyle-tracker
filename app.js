@@ -467,10 +467,10 @@
       return { x: x, y: y, value: item.value };
     });
     var pathD = points.map(function (p, i) { return (i === 0 ? "M" : "L") + p.x.toFixed(1) + "," + p.y.toFixed(1); }).join(" ");
-    var circles = points.map(function (p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="var(--primary)"></circle>'; }).join("");
+    var circles = points.map(function (p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="var(--success)"></circle>'; }).join("");
     el.innerHTML =
       '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
-      '<path d="' + pathD + '" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>' +
+      '<path d="' + pathD + '" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>' +
       circles +
       "</svg>" +
       '<div class="linechart-labels">' + weeksData.map(function (w2) { return "<span>S" + w2.week + "</span>"; }).join("") + "</div>";
