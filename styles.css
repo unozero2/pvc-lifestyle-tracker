@@ -21,6 +21,10 @@
   --phase5: #3e4a63;
   --shadow: 0 2px 8px rgba(43, 38, 33, 0.05);
   --shadow-nav: 0 8px 18px rgba(20, 16, 10, 0.28);
+  --border-amber: #8a6d47;
+  --border-amber-strong: #6b5236;
+  --shadow-3d: inset 0 1px 0 rgba(255, 246, 230, 0.55), 0 3px 0 var(--border-amber-strong), 0 7px 14px rgba(43, 38, 33, 0.12);
+  --shadow-3d-sm: inset 0 1px 0 rgba(255, 246, 230, 0.5), 0 2px 0 var(--border-amber-strong);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
   --nav-bg-dark: #1d2130;
@@ -52,6 +56,10 @@
     --success: #8fb587;
     --shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
     --shadow-nav: 0 6px 20px rgba(0, 0, 0, 0.5);
+    --border-amber: #c9a876;
+    --border-amber-strong: #8a6d47;
+    --shadow-3d: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 3px 0 var(--border-amber-strong), 0 7px 14px rgba(0, 0, 0, 0.4);
+    --shadow-3d-sm: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 0 var(--border-amber-strong);
     --dot-none: #4a3f30;
   }
 }
@@ -90,7 +98,8 @@ h2 {
 .squiggle-word svg { position: absolute; left: 0; bottom: -6px; width: 100%; height: 9px; }
 .icon-btn {
   width: 38px; height: 38px; border-radius: 50%;
-  border: none;
+  border: 1.5px solid var(--border-amber);
+  box-shadow: var(--shadow-3d-sm);
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
@@ -201,6 +210,8 @@ h2 {
   padding: 12px 16px;
   background: var(--secondary-bg);
   color: var(--secondary-text);
+  border: 1.5px solid var(--border-amber);
+  box-shadow: var(--shadow-3d-sm);
   border-radius: 18px;
   font-size: 13px;
   font-weight: 600;
@@ -211,6 +222,8 @@ h2 {
   padding: 12px 16px;
   background: #fdf1da;
   color: #8a5a17;
+  border: 1.5px solid var(--border-amber-strong);
+  box-shadow: var(--shadow-3d-sm);
   border-radius: 18px;
   font-size: 13px;
 }
@@ -224,11 +237,11 @@ main { padding: 0 16px; }
 
 .card {
   background: var(--surface);
-  border: none;
+  border: 1.5px solid var(--border-amber);
   border-radius: 22px;
   padding: 18px;
   margin-bottom: 16px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-3d);
 }
 
 .field-label {
@@ -389,7 +402,9 @@ main { padding: 0 16px; }
 .screen-title { font-family: var(--font-serif); font-size: 22px; font-weight: 400; margin: 0; }
 .chevrons { display: flex; gap: 8px; }
 .chevron-btn {
-  width: 32px; height: 32px; border-radius: 50%; border: none;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid var(--border-amber);
+  box-shadow: var(--shadow-3d-sm);
   background: var(--surface); color: var(--text);
   font-size: 16px; line-height: 1; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -398,7 +413,10 @@ main { padding: 0 16px; }
 .day-pill-row { display: flex; gap: 6px; margin: 0 0 16px 0; }
 .day-pill {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
-  background: var(--surface); border-radius: 16px; padding: 10px 0 11px 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border-amber);
+  box-shadow: var(--shadow-3d-sm);
+  border-radius: 16px; padding: 10px 0 11px 0;
 }
 .day-pill.today { background: var(--primary); }
 .day-pill-dow { font-size: 9px; letter-spacing: 0.05em; color: var(--muted); text-transform: uppercase; }
@@ -417,6 +435,8 @@ main { padding: 0 16px; }
 .summary-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .summary-item {
   background: var(--bg);
+  border: 1.5px solid var(--border-amber);
+  box-shadow: var(--shadow-3d-sm);
   border-radius: 14px;
   padding: 10px 6px;
   text-align: center;
