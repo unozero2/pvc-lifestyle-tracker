@@ -42,22 +42,6 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"></line><circle cx="9" cy="6" r="2" fill="var(--bg)"></circle><line x1="4" y1="12" x2="20" y2="12"></line><circle cx="15" cy="12" r="2" fill="var(--bg)"></circle><line x1="4" y1="18" x2="20" y2="18"></line><circle cx="11" cy="18" r="2" fill="var(--bg)"></circle></svg>
         </button>
       </div>
-      <div id="dayStrip" class="day-strip"></div>
-      <div id="dateInputWrap" class="date-input-wrap hidden">
-        <label class="field-label" for="logDate">Scegli un'altra data</label>
-        <input type="date" id="logDate" class="input">
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Checklist di oggi</h2>
-      <p class="muted small" id="checklistHint"></p>
-      <div id="checklistList" class="checklist-list"></div>
-    </div>
-
-    <div class="card">
-      <h2>Diario sintomi</h2>
-
       <div class="field-group">
         <span class="field-label">Extrasistoli percepite oggi?</span>
         <div class="segmented" id="pvcPerceivedSeg">
@@ -68,14 +52,6 @@
 
       <div id="pvcDetails" class="hidden">
         <div class="field-group">
-          <span class="field-label">Intensità</span>
-          <div class="segmented" id="pvcIntensitySeg">
-            <button type="button" class="seg-btn" data-value="1">Lieve</button>
-            <button type="button" class="seg-btn" data-value="2">Moderata</button>
-            <button type="button" class="seg-btn" data-value="3">Intensa / tutto il giorno</button>
-          </div>
-        </div>
-        <div class="field-group">
           <span class="field-label">In quali momenti?</span>
           <div class="chip-group swatch-group" id="pvcMomentsGroup">
             <button type="button" class="chip swatch-chip" data-value="mattina"><span class="swatch-color swatch-mattina"></span><span class="swatch-label">Mattina</span></button>
@@ -84,7 +60,39 @@
             <button type="button" class="chip swatch-chip" data-value="notte"><span class="swatch-color swatch-notte"></span><span class="swatch-label">Notte</span></button>
           </div>
         </div>
+        <div class="field-group">
+          <span class="field-label">Intensità</span>
+          <div class="segmented" id="pvcIntensitySeg">
+            <button type="button" class="seg-btn" data-value="1">Lieve</button>
+            <button type="button" class="seg-btn" data-value="2">Moderata</button>
+            <button type="button" class="seg-btn" data-value="3">Intensa / tutto il giorno</button>
+          </div>
+        </div>
       </div>
+
+      <div class="week-label-center">Questa settimana</div>
+      <div id="dayStrip" class="day-strip"></div>
+      <div id="dateInputWrap" class="date-input-wrap hidden">
+        <label class="field-label" for="logDate">Scegli un'altra data</label>
+        <input type="date" id="logDate" class="input">
+      </div>
+    </div>
+
+    <div class="card recap-card">
+      <div class="recap-icon" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"></path></svg>
+      </div>
+      <p class="recap-text" id="heroRecapText">-</p>
+    </div>
+
+    <div class="card">
+      <h2>Checklist di oggi</h2>
+      <p class="muted small" id="checklistHint"></p>
+      <div id="checklistList" class="checklist-list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Diario sintomi</h2>
 
       <div class="field-group">
         <span class="field-label">Episodio di reflusso oggi?</span>

@@ -125,7 +125,7 @@
     if (tab === "settimana") renderWeekTab();
     if (tab === "andamento") renderTrends();
     if (tab === "impostazioni") renderSettings();
-    if (tab === "oggi") renderWeekBanner();
+    if (tab === "oggi") { renderWeekBanner(); renderRecap(); }
   }
 
   document.querySelectorAll(".nav-btn").forEach(function (btn) {
@@ -325,6 +325,8 @@
     conf.classList.remove("hidden");
     setTimeout(function () { conf.classList.add("hidden"); }, 2000);
     renderWeekBanner();
+    renderRecap();
+    renderDayStrip(key);
   });
 
   // ---------- SETTIMANA tab ----------
@@ -511,16 +513,17 @@
       if (log.sleepHours != null) { sleepSum += log.sleepHours; sleepCount++; }
       items.forEach(function (it) { totalChecks++; if (log.checklist && log.checklist[it.id]) doneChecks++; });
     });
-    var el = document.getElementById("recapText");
+    var targets = ["recapText", "heroRecapText"].map(function (id) { return document.getElementById(id); }).filter(Boolean);
     if (!loggedDays) {
-      el.textContent = "Nessuna giornata registrata ancora questa settimana.";
+      targets.forEach(function (el) { el.textContent = "Nessuna giornata registrata ancora questa settimana."; });
       return;
     }
     var adherence = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
     var avgSleep = sleepCount ? (sleepSum / sleepCount).toFixed(1) : "-";
-    el.innerHTML =
+    var html =
       "Questa settimana (settimana " + currentWeek + "): extrasistoli percepite in <b>" + pvcDays + " giorni</b> su " +
       loggedDays + " registrati, reflusso in " + refluxDays + " giorni, sonno medio " + avgSleep + "h, aderenza checklist " + adherence + "%.";
+    targets.forEach(function (el) { el.innerHTML = html; });
   }
 
   function renderMomentsDistribution() {
@@ -703,6 +706,7 @@
     logDateInput.value = todayKey();
     loadFormForDate(todayKey());
     renderWeekBanner();
+    renderRecap();
     renderSettings();
     alert("Dati cancellati.");
   });
@@ -811,4 +815,5 @@
   // ---------- Init ----------
   loadFormForDate(todayKey());
   renderWeekBanner();
+  renderRecap();
 })();

@@ -119,6 +119,7 @@ h2 {
 .day-cell-dot.has-log { background: var(--primary); border-color: var(--primary); }
 
 .date-input-wrap { margin-top: 14px; }
+.week-label-center { text-align: center; font-size: 11px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin: 4px 0 12px 0; }
 
 .swatch-group { justify-content: space-between; }
 .swatch-chip {
