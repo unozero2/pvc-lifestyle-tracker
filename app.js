@@ -233,9 +233,14 @@
     return "background:var(--dot-1)";
   }
 
+  var SQUIGGLE_SVG = '<svg viewBox="0 0 90 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2,6 Q15,0 28,6 T54,6 T80,6" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"></path></svg>';
+
   function renderHero(key) {
     document.getElementById("heroDateLabel").textContent = formatHeroDate(key);
-    document.getElementById("heroQuestion").textContent = key === todayKey() ? "Come sta il tuo cuore oggi?" : "Come stava il tuo cuore quel giorno?";
+    var prefix = key === todayKey() ? "Come sta il tuo " : "Come stava il tuo ";
+    var suffix = key === todayKey() ? " oggi?" : " quel giorno?";
+    document.getElementById("heroQuestion").innerHTML =
+      prefix + '<span class="squiggle-word">cuore' + SQUIGGLE_SVG + "</span>" + suffix;
   }
 
   function renderDayStrip(selectedKey) {
@@ -252,7 +257,6 @@
       cell.setAttribute("data-date", k);
       cell.innerHTML =
         '<span class="day-cell-dow">' + DOW_LETTERS[d.getDay()] + '</span>' +
-        '<span class="day-cell-num">' + d.getDate() + '</span>' +
         '<span class="day-cell-dot ' + (log ? "has-log" : "") + '" style="' + dotColorForLog(log) + '"></span>';
       cell.addEventListener("click", function () {
         var k2 = this.getAttribute("data-date");
@@ -326,6 +330,23 @@
   // ---------- SETTIMANA tab ----------
   var weekOffset = null; // absolute week number being viewed
 
+  var DOW_ABBR = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+
+  function renderWeekDayPills(days, tk) {
+    var html = "";
+    days.forEach(function (d) {
+      var dd = parseDateKey(d);
+      var log = getLog(d);
+      html +=
+        '<div class="day-pill' + (d === tk ? " today" : "") + '">' +
+        '<span class="day-pill-dow">' + DOW_ABBR[dd.getDay()] + '</span>' +
+        '<span class="day-pill-num">' + dd.getDate() + '</span>' +
+        '<span class="day-pill-mark" style="' + dotColorForLog(log) + '"></span>' +
+        "</div>";
+    });
+    document.getElementById("weekDayPills").innerHTML = html;
+  }
+
   function renderWeekTab() {
     if (weekOffset === null) {
       weekOffset = Math.max(1, weekNumberFor(data.settings.startDate, todayKey()));
@@ -335,29 +356,27 @@
     var days = [];
     for (var i = 0; i < 7; i++) days.push(dateKey(addDays(start, i)));
 
-    document.getElementById("weekNavLabel").textContent = "Settimana " + wk + " (" + days[0] + " → " + days[6] + ")";
+    document.getElementById("weekNavLabel").textContent = "Settimana " + wk;
 
     var items = activeItems(wk, data.settings.showAllItems);
     var tk = todayKey();
-    var html = '<table class="week-grid"><thead><tr><th>Voce</th>';
-    days.forEach(function (d) {
-      var dd = parseDateKey(d);
-      html += '<th class="' + (d === tk ? "today-col" : "") + '">' + dd.getDate() + "/" + (dd.getMonth() + 1) + "</th>";
-    });
-    html += "</tr></thead><tbody>";
+
+    renderWeekDayPills(days, tk);
+
+    var html = "";
     items.forEach(function (it) {
-      html += "<tr><td>" + it.label + "</td>";
+      html += '<div class="heat-item"><div class="heat-item-label">' + it.label + '</div><div class="heat-dots">';
       days.forEach(function (d) {
         var log = getLog(d);
         var checked = log && log.checklist && log.checklist[it.id];
-        html += '<td class="cell-check ' + (checked ? "checked" : "") + " " + (d === tk ? "today-col" : "") + '" data-date="' + d + '" data-item="' + it.id + '">' + (checked ? "✓" : "") + "</td>";
+        var bg = checked ? PHASES[it.phase].color : "";
+        html += '<button type="button" class="heat-dot' + (d === tk ? " today-col" : "") + '" style="' + (bg ? "background:" + bg : "") + '" data-date="' + d + '" data-item="' + it.id + '" aria-label="' + it.label + " " + d + '"></button>';
       });
-      html += "</tr>";
+      html += "</div></div>";
     });
-    html += "</tbody></table>";
-    document.getElementById("weekGridWrap").innerHTML = html;
+    document.getElementById("weekGridWrap").innerHTML = html || '<p class="muted small">Nessuna voce di checklist attiva per questa settimana.</p>';
 
-    document.querySelectorAll(".cell-check").forEach(function (cell) {
+    document.querySelectorAll(".heat-dot").forEach(function (cell) {
       cell.addEventListener("click", function () {
         var d = cell.getAttribute("data-date");
         var itemId = cell.getAttribute("data-item");
@@ -499,7 +518,9 @@
     }
     var adherence = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
     var avgSleep = sleepCount ? (sleepSum / sleepCount).toFixed(1) : "-";
-    el.textContent = "Questa settimana (settimana " + currentWeek + "): extrasistoli percepite in " + pvcDays + " giorni su " + loggedDays + " registrati, reflusso in " + refluxDays + " giorni, sonno medio " + avgSleep + "h, aderenza checklist " + adherence + "%.";
+    el.innerHTML =
+      "Questa settimana (settimana " + currentWeek + "): extrasistoli percepite in <b>" + pvcDays + " giorni</b> su " +
+      loggedDays + " registrati, reflusso in " + refluxDays + " giorni, sonno medio " + avgSleep + "h, aderenza checklist " + adherence + "%.";
   }
 
   function renderMomentsDistribution() {
